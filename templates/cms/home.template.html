@@ -1,4 +1,8 @@
+<!--This is the start of Custom Sidebar Menu -->
 [%load_template file:'cms/includes/homecat.template.html'/%]
+<!--This is the start of Custom Sidebar Menu -->
+
+<!-- This is the start of Part Finder Dropdown Menu -->
 [%list type:'content' filter:'content_type=product-finder&content_level=1' sort:'sortorder,content_name' limit:'999'%]
                     [%param *header%]
                         [%site_value id:'footer_javascript'%]
@@ -24,13 +28,14 @@
                             </select>
                         </div>
                     [%/param%]
-                [%/list%]
+[%/list%]
+<!-- This is the End of Part Finder Dropdown Menu -->
 
-
-	[%if [@config:show_home_ads@]%]
+<!--This is the start of Home Ads and Slider -->
+[%if [@config:show_home_ads@]%]
 		[%advert type:'text' template:'carousel' limit:'10' ad_group:''%]
 			[%param *header%]
-				<section id="homepageCarousel" class="carousel slide" data-ride="carousel" aria-label="Banner images" style="background-color: black; border-radius: 0px; padding-top: 0px; padding-bottom: 0px; padding-left: 0px; padding-right: 0px; margin-top: 4px; border-radius: 3px;">
+				<section id="homepageCarousel" class="carousel slide" data-ride="carousel" aria-label="Banner images" style="background-color: black; border-radius: 0px; padding-top: 0px; padding-bottom: 0px; padding-left: 0px; padding-right: 0px; margin-top: 0px; border-radius: 3px;">
 					[%if [@total_showing@] > 1%]
 						<ol class="carousel-indicators">
 							[%site_value id:'counter' type:'load'/%]
@@ -58,9 +63,16 @@
 				</a>
 			[%/param%]
 		[%/advert%]
-	[%/if%]
-	<hr aria-hidden="true" />
+[%/if%]
+<!-- This is the end of Home Ads and Slider -->
+
+<hr aria-hidden="true" /> <!--This is the home horizontal line -->
+
+<!--This is the start of Home Main Contents -->
 	<section id="homepage-content" class="n-responsive-content" aria-label="Main description">[@page_content@]</section>
+<!--This is the start of Home Main Contents -->
+	
+<!--This is the start home Featured Products limited to 8 into 4 columns -->
 	[%if [@config:show_home_ads@]%]
 		[%advert type:'product' limit:'8' template:'' ad_group:''%]
 			[%param *header%]
@@ -85,4 +97,6 @@
 			[%/param%]
 		[%/advert%]
 	[%/if%]
+<!--This is the end home Featured Products limited to 8 into 4 columns -->
 </div>
+

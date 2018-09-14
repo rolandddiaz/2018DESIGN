@@ -9,6 +9,90 @@
 	<link href="https://fonts.googleapis.com/css?family=Oswald:400" rel="stylesheet">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 </head>
+
+[%site_value id:'footer_javascript'%]
+<script>
+    // Same/next day delivery countdown feature
+
+    // Global time and date variables required for the functions.
+    var currentHour;
+    var currentDate;
+    var dayText;
+
+    // Function required for the same/next day delivery countdown, and also the "sale ends in" countdown on the product page.
+    function getDates(type) {
+        serverTime = "[%format type:'date' format:'#Y-#m-#d-#h-#i-#s-#W'%]now[%/format%]";
+        serverDate = serverTime.split("-");
+        year = serverDate[0];
+        monthNames = [null, "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        month = monthNames[(serverDate[1])];
+        dayNumber = serverDate[2];
+        dayText = serverDate[6];
+        hour = serverDate[3];
+        time = serverDate[3]+":"+serverDate[4]+":"+serverDate[5];
+
+        // Format dates correctly for Jquery countdown.
+        // "fullDateAndTime" is an additional parameter to ensure that the countdown function uses the server time, rather than the client time.
+        currentDate = serverDate[0]+"/"+serverDate[1]+"/"+serverDate[2];
+        fullDateAndTime = month+" "+dayNumber+","+time;
+
+        if (type == 'promo') {
+            // Get formatted promo date
+            promoEndDateFull = "[%format type:'date' format:'#Y-#m-#d-#h-#i-#s-#W'%][@promo_end@][%/format%]";
+            date = promoEndDateFull.split("-");
+            time = date[3]+":"+date[4]+":"+date[5];
+            dateFormatted = date[0]+"/"+date[1]+"/"+date[2]+" "+time;
+        }
+    };
+    getDates();
+
+    $(document).ready(function(){
+        // Display the same day countdown timer
+        function sameDayCountdown() {
+            $('#countdown').countdown(currentDate+' [@config:countdown_finish_hour_same_day@]:00:00', function(event){
+                $(this).html(event.strftime('<p>Order in <span>%H:%M:%S</span> for same day delivery!</p><p>[@config:countdown_text@]</p>'));
+            }, fullDateAndTime);
+        }
+
+        // Display the next day countdown timer
+        function nextDayCountdown() {
+            $('#countdown').countdown(currentDate+' [@config:countdown_finish_hour_next_day@]:00:00', function(event){
+                $(this).html(event.strftime('<p>Order in <span>%H:%M:%S</span> for next day delivery!</p><p>[@config:countdown_text@]</p>'));
+            }, fullDateAndTime);
+        }
+
+        /* Show the countdown timers, based on which they offer. The options are pulled from a custom config, with the following available:
+           - same_and_next (shows both the same day delivery, and next day delivery countdowns)
+           - same (shows same day delivery countdown only)
+           - next (shows next day delivery countdown only)
+
+           The countdown timer will only show on weekdays, and not weekends.
+        */
+        if(dayText != 'Saturday' && dayText != 'Sunday') {
+            switch ('[@config:delivery_countdown_type@]') {
+                case 'same_and_next':
+                    finishHourSameDay = parseInt('[@config:countdown_finish_hour_same_day@]');
+                    finishHourNextDay = parseInt('[@config:countdown_finish_hour_next_day@]');
+                    if (hour < finishHourSameDay) {
+                        sameDayCountdown();
+                    }
+                    else if (hour < finishHourNextDay) {
+                        nextDayCountdown();
+                    };
+                    break;
+                case 'same':
+                    sameDayCountdown();
+                    break;
+                case 'next':
+                    nextDayCountdown();
+                    break;
+            }
+        }
+    });
+</script>
+[%/site_value%]
+
+
 <body id="n_[@config:current_page_type@]" class="n_[@CONFIG:TEMPLATELANG@]">
 <a href="#main-content" class="sr-only sr-only-focusable">Skip to main content</a>
 <header class="container wrapper-header py-3" aria-label="Header container" style="background-color: rgb(0, 111, 245); border-radius: 3px; padding-bottom: 0px;">
@@ -88,7 +172,7 @@
 
 
 
-	
+
 	<div class="row">
 		<div class="col-md-12">
 				<nav class="navbar navbar-expand-md navbar-light bg-light mt-0 mt-md-2">
